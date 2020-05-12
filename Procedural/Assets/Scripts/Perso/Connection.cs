@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Connection : MonoBehaviour
+public class Connection
 {
 	public bool hasDoor { get; set; }
+	public Node[] linkedNodes;
 
-	public Connection(bool _hasDoor = false)
+	public Connection(Node[] _linkedNodes, bool _hasDoor = false)
 	{
 		hasDoor = _hasDoor;
+		linkedNodes = _linkedNodes;
 	}
 }

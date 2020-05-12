@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class Node
 {
-	public ExitEnum[] exits;
+	public Vector2Int position;
+	public List<ExitEnum> exits;
 	public int difficulty;
 
-	public Node(RoomScriptable rs)
+	public Node()
 	{
-		exits = rs.exits;
-		difficulty = rs.difficulty;
+		exits = new List<ExitEnum>();
 	}
 }
