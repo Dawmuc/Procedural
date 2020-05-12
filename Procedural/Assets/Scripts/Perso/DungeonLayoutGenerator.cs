@@ -17,30 +17,18 @@ public class DungeonLayoutGenerator : MonoBehaviour
 {
 	[SerializeField] private string scriptableDirectoryPath = "Assets/Scripts/Perso/ScriptableRoom";
 	[SerializeField] private int layoutSize = 11;
-	private RoomClass[] possiblesRooms;
-	private RoomClass[,] rooms;
+	private Node[] possiblesRooms;
+	private Node[,] rooms;
 
 	private void Awake()
 	{
 		// retrieve all possible rooms
 		string[] fileNames = Directory.GetFiles(scriptableDirectoryPath).Where(path => !path.EndsWith(".meta")).ToArray();
-		possiblesRooms = new RoomClass[fileNames.Length];
-		for (int i = 0; i < fileNames.Length; i++) { possiblesRooms[i] = new RoomClass((RoomScriptable)AssetDatabase.LoadAssetAtPath(fileNames[i], typeof(RoomScriptable))); }
+		possiblesRooms = new Node[fileNames.Length];
+		for (int i = 0; i < fileNames.Length; i++) { possiblesRooms[i] = new Node((RoomScriptable)AssetDatabase.LoadAssetAtPath(fileNames[i], typeof(RoomScriptable))); }
 
-		// 
+		// LayoutSize
 		if (layoutSize % 2 == 0) layoutSize++;
-		rooms = new RoomClass[layoutSize, layoutSize];
-	}
-}
-
-public class RoomClass
-{
-	public ExitEnum[] exits;
-	public int difficulty;
-
-	public RoomClass(RoomScriptable rs)
-	{
-		exits = rs.exits;
-		difficulty = rs.difficulty;
+		rooms = new Node[layoutSize, layoutSize];
 	}
 }
