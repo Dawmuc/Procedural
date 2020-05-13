@@ -201,7 +201,7 @@ MonoBehaviour:
       offset: {x: 0, y: 0, z: 0}
       rotation: {x: 0, y: 0, z: 0}
       offsetMode: 0
-      showTileWithPrefab: 0
+      showTileWithPrefab: 1
       showPrefabPreviewInTilePalette: 0
     autilingGroup: 0
   - uv:
