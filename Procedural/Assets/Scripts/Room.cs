@@ -7,6 +7,18 @@ public class Room : MonoBehaviour {
 
     public bool isStartRoom = false;
 	public Vector2Int position = Vector2Int.zero;
+	public enum RoomDifficulty
+    {
+		VeryEasy = 0,
+		Easy = 1,
+		Normal = 2,
+		Hard = 3,
+		VeryHard = 4,
+    }
+
+	public RoomDifficulty difficulty;
+
+
 
 	private TilemapGroup _tilemapGroup;
 
