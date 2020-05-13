@@ -269,7 +269,7 @@ MonoBehaviour:
   m_tilemaps:
   - {fileID: 1816447184505093659}
   - {fileID: 7439706364905893098}
-  m_selectedIndex: 1
+  m_selectedIndex: 0
   m_unselectedColorMultiplier: 1
   m_defaultTilemapWindowVisible: 0
   m_displayTilemapRList: 1
@@ -291,6 +291,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isStartRoom: 0
   position: {x: 1, y: 0}
+  difficulty: 2
 --- !u!50 &3153533405755549141
 Rigidbody2D:
   serializedVersion: 4
