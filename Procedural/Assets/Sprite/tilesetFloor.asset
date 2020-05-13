@@ -135,11 +135,12 @@ MonoBehaviour:
       height: 0.125
     collData:
       vertices: []
-      type: 0
+      type: 1
     paramContainer:
       m_paramList: []
     prefabData:
-      prefab: {fileID: 0}
+      prefab: {fileID: 8569794787152346861, guid: 537244d122a859244893e81c96a15b0f,
+        type: 3}
       offset: {x: 0, y: 0, z: 0}
       rotation: {x: 0, y: 0, z: 0}
       offsetMode: 0
