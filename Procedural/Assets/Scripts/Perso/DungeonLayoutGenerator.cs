@@ -15,8 +15,9 @@ public enum ExitEnum
 
 public class DungeonLayoutGenerator : MonoBehaviour
 {
-	[SerializeField] private string scriptableDirectoryPath = "Assets/Scripts/Perso/ScriptableRoom";
+	[SerializeField] private string scriptableDirectoryPath = "Assets/Prefabs/Rooms";
 	[SerializeField] private int nbOfRooms = 5;
+	[SerializeField] private Vector2Int roomSize = new Vector2Int(11, 9);
 	private GameObject[] possiblesRooms;
 	private ExitEnum[] possibleExits;
 
@@ -25,18 +26,22 @@ public class DungeonLayoutGenerator : MonoBehaviour
 
     private void Awake()
     {
-        // retrieve all possible rooms
-        //string[] fileNames = Directory.GetFiles(scriptableDirectoryPath).Where(path => !path.EndsWith(".meta")).ToArray();
-        //possiblesRooms = new GameObject[fileNames.Length];
-        //for (int i = 0; i < fileNames.Length; i++) { possiblesRooms[i] = (GameObject)AssetDatabase.LoadAssetAtPath(fileNames[i], typeof(GameObject)); }
+		// retrieve all possible rooms
+		string[] fileNames = Directory.GetFiles(scriptableDirectoryPath).Where(path => !path.EndsWith(".meta")).ToArray();
+		possiblesRooms = new GameObject[fileNames.Length];
+		for (int i = 0; i < fileNames.Length; i++) { possiblesRooms[i] = (GameObject)AssetDatabase.LoadAssetAtPath(fileNames[i], typeof(GameObject)); }
 
-        possibleExits = System.Enum.GetValues(typeof(ExitEnum)).Cast<ExitEnum>().ToArray();
+		possibleExits = System.Enum.GetValues(typeof(ExitEnum)).Cast<ExitEnum>().ToArray();
 
 		while (nodes == null)
 		{
 			connections = new List<Connection>();
 			nodes = GenerateListOfNode(InitListOfRoom(), nbOfRooms);
 		}
+
+		foreach (Node n in nodes) { GenerateRandomRoom(n.position * roomSize); }
+
+		Debug.Log("Fini");
     }
 
     private List<Node> InitListOfRoom()
@@ -85,7 +90,7 @@ public class DungeonLayoutGenerator : MonoBehaviour
 			// restart if path stucked
 			if (pe.Length == 0)
 			{
-				Debug.LogError("C la merde");
+				Debug.LogError("Retry");
 				return null;
 			}
 
@@ -111,6 +116,11 @@ public class DungeonLayoutGenerator : MonoBehaviour
 			return false;
 	}
 
+	private void GenerateRandomRoom(Vector2 pos)
+	{
+		Instantiate(possiblesRooms[Random.Range(0, possiblesRooms.Length)], pos, Quaternion.identity);
+	}
+
     void OnDrawGizmosSelected()
     {
         int nb = 0;
@@ -119,18 +129,18 @@ public class DungeonLayoutGenerator : MonoBehaviour
 
         foreach (Node item in nodes)
         {
-            Gizmos.color = Color.red;
-            Vector3 itemPos = new Vector3(item.position.x, item.position.y, 0);
-            Gizmos.DrawWireSphere(itemPos, 0.1f);
+            Gizmos.color = Color.white;
+            Vector3 itemPos = new Vector3(item.position.x, item.position.y, 0) * (Vector2)roomSize;
+            Gizmos.DrawWireSphere(itemPos, 0.3f);
             Handles.Label(itemPos, nb.ToString());
             nb++;
         }
         
         foreach  (Connection conect in connections)
         {
-            Gizmos.color = Color.blue;
-            Vector3 conectPosOrigin = new Vector3(conect.linkedNodes[0].position.x, conect.linkedNodes[0].position.y, 0);
-            Vector3 conectPosDestination = new Vector3(conect.linkedNodes[1].position.x, conect.linkedNodes[1].position.y, 0);
+            Gizmos.color = Color.white;
+            Vector3 conectPosOrigin = new Vector3(conect.linkedNodes[0].position.x, conect.linkedNodes[0].position.y, 0) * (Vector2)roomSize;
+            Vector3 conectPosDestination = new Vector3(conect.linkedNodes[1].position.x, conect.linkedNodes[1].position.y, 0) * (Vector2)roomSize;
             Gizmos.DrawLine(conectPosOrigin, conectPosDestination);
         }
         

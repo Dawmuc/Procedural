@@ -4,12 +4,9 @@ using UnityEngine;
 
 public class Node
 {
-	public Vector2Int position;
-	public List<ExitEnum> exits;
-	public int difficulty;
+	public Vector2Int position { get; set; }
+	public List<ExitEnum> exits { get; set; }
+	public int difficulty { get; set; }
 
-	public Node()
-	{
-		exits = new List<ExitEnum>();
-	}
+	public Node() { exits = new List<ExitEnum>(); }
 }
