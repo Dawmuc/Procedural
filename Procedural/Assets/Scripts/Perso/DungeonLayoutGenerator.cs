@@ -15,11 +15,10 @@ public enum ExitEnum
 
 public class DungeonLayoutGenerator : MonoBehaviour
 {
-    [SerializeField] private string scriptableDirectoryPath = "Assets/Scripts/Perso/ScriptableRoom";
-    [SerializeField] private int nbOfRooms = 5;
-    private ExitEnum[] possibleExits;
-    private GameObject[] possiblesRooms;
-
+	[SerializeField] private string scriptableDirectoryPath = "Assets/Scripts/Perso/ScriptableRoom";
+	[SerializeField] private int nbOfRooms = 5;
+	private GameObject[] possiblesRooms;
+	private ExitEnum[] possibleExits;
 
     List<Node> nodes;
     List<Connection> connections;
@@ -33,12 +32,11 @@ public class DungeonLayoutGenerator : MonoBehaviour
 
         possibleExits = System.Enum.GetValues(typeof(ExitEnum)).Cast<ExitEnum>().ToArray();
 
-        nodes = InitListOfRoom();
-        connections = new List<Connection>();
-
-        nodes = GenerateListOfNode(nodes, nbOfRooms);
-
-        Debug.Log("Fini");
+		while (nodes == null)
+		{
+			connections = new List<Connection>();
+			nodes = GenerateListOfNode(InitListOfRoom(), nbOfRooms);
+		}
     }
 
     private List<Node> InitListOfRoom()
@@ -53,58 +51,77 @@ public class DungeonLayoutGenerator : MonoBehaviour
 
     private List<Node> GenerateListOfNode(List<Node> nodes, int nbOfRooms)
     {
-        List<Node> nl = new List<Node>(nodes);
+		List<Node> nl = new List<Node>(nodes);
 
-        for (int i = 0; i < nbOfRooms - 1; i++)
-        {
-            List<ExitEnum> pathToRemove = new List<ExitEnum>();
-            Vector2Int pos = Vector2Int.zero;
+		for (int i = 0; i < nbOfRooms - 1; i++)
+		{
+			// info on current node
+			Vector2Int pos = new Vector2Int(nl[i].position.x, nl[i].position.y);
 
-            if (nl[i].exits.Contains(ExitEnum.Up))
-            {
-                pathToRemove.Add(ExitEnum.Down);
-                pos = new Vector2Int(nl[i].position.x, nl[i].position.y + 1);
-            }
-            if (nl[i].exits.Contains(ExitEnum.Down))
-            {
-                pathToRemove.Add(ExitEnum.Up);
-                pos = new Vector2Int(nl[i].position.x, nl[i].position.y - 1);
-            }
-            if (nl[i].exits.Contains(ExitEnum.Left))
-            {
-                pathToRemove.Add(ExitEnum.Right);
-                pos = new Vector2Int(nl[i].position.x - 1, nl[i].position.y);
-            }
-            if (nl[i].exits.Contains(ExitEnum.Right))
-            {
-                pathToRemove.Add(ExitEnum.Left);
-                pos = new Vector2Int(nl[i].position.x + 1, nl[i].position.y);
-            }
+			// place current node + 1
+			if (nl[i].exits.Contains(ExitEnum.Up))
+				pos = new Vector2Int(pos.x, pos.y + 1);
+			if (nl[i].exits.Contains(ExitEnum.Down))
+				pos = new Vector2Int(pos.x, pos.y - 1);
+			if (nl[i].exits.Contains(ExitEnum.Left))
+				pos = new Vector2Int(pos.x - 1, pos.y);
+			if (nl[i].exits.Contains(ExitEnum.Right))
+				pos = new Vector2Int(pos.x + 1, pos.y);
 
-            ExitEnum[] pe = possibleExits.Except(pathToRemove).ToArray();
+			// prevent overlaping between nodes
+			List<ExitEnum> pathToRemove = new List<ExitEnum>();
+			if (CheckIfNodeListContainPos(nl, new Vector2Int(pos.x, pos.y + 1))) // up
+				pathToRemove.Add(ExitEnum.Up);
+			if (CheckIfNodeListContainPos(nl, new Vector2Int(pos.x, pos.y - 1))) // down
+				pathToRemove.Add(ExitEnum.Down);
+			if (CheckIfNodeListContainPos(nl, new Vector2Int(pos.x + 1, pos.y))) // right
+				pathToRemove.Add(ExitEnum.Right);
+			if (CheckIfNodeListContainPos(nl, new Vector2Int(pos.x - 1, pos.y))) // left
+				pathToRemove.Add(ExitEnum.Left);
 
-            Node n = new Node();
-            n.position = pos;
-            n.difficulty = 0;
-            n.exits.Add(pe[Random.Range(0, pe.Length)]);
+			// retrieve possible exit for new node
+			ExitEnum[] pe = possibleExits.Except(pathToRemove).ToArray();
 
-            nl.Add(n);
+			// restart if path stucked
+			if (pe.Length == 0)
+			{
+				Debug.LogError("C la merde");
+				return null;
+			}
 
-            connections.Add(new Connection(new Node[] { nl[i], nl[i + 1] }));
-
-        }
-
-        return nl;
+			// creqte new node
+			Node n = new Node();
+			n.position = pos;
+			n.difficulty = 0;
+			n.exits.Add(pe[Random.Range(0, pe.Length)]);
+			
+			nl.Add(n);
+			
+			connections.Add(new Connection(new Node[] { nl[i], nl[i + 1] }));
+		}
+		
+		return nl;
     }
+
+	private bool CheckIfNodeListContainPos(List<Node> nl, Vector2Int pos)
+	{
+		if (nl.Where(node => node.position == pos).ToArray().Length > 0)
+			return true;
+		else
+			return false;
+	}
 
     void OnDrawGizmosSelected()
     {
         int nb = 0;
+		if (nodes == null)
+			return;
+
         foreach (Node item in nodes)
         {
             Gizmos.color = Color.red;
             Vector3 itemPos = new Vector3(item.position.x, item.position.y, 0);
-            Gizmos.DrawWireSphere(itemPos, 0.5f);
+            Gizmos.DrawWireSphere(itemPos, 0.1f);
             Handles.Label(itemPos, nb.ToString());
             nb++;
         }
