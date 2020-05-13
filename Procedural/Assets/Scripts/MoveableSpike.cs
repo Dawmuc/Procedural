@@ -22,6 +22,8 @@ public class MoveableSpike : MonoBehaviour
 		Player.Instance.ApplyHit(null);
 	}
 
+	//Update, start coroutine
+
 	private void Update()
 	{
 		if (test == true)
@@ -42,12 +44,12 @@ public class MoveableSpike : MonoBehaviour
 
 	public IEnumerator Start()
 	{
-		//Wait for 14 secs.
+		
 		//yield return new WaitForSeconds(Timer);
 		
 		if (test == true)
 		{
-			yield return new WaitForSeconds(3);
+			yield return new WaitForSeconds(Timer);
 			spike_Gameobject.SetActive(false);
 			test = false;
 			
@@ -56,7 +58,7 @@ public class MoveableSpike : MonoBehaviour
 
 		if (test == false)
 		{
-			yield return new WaitForSeconds(3);
+			yield return new WaitForSeconds(Timer);
 			spike_Gameobject.SetActive(true);
 			test = true;
 			yield return null;
