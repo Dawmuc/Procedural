@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using System.Linq;
+using UnityEditor;
 
 public enum ExitEnum
 {
@@ -89,16 +90,33 @@ public class DungeonLayoutGenerator : MonoBehaviour
 
             nl.Add(n);
 
-            // jusque la ok. generation de node et position.
-
             connections.Add(new Connection(new Node[] { nl[i], nl[i + 1] }));
-            // deja assigner liste de connections ?
 
-            // exception? tu geres tout les cas a chaque fois ? je vois pas de quoi tu parles ?
         }
 
-        // du coup la fonction c est pas node gen mais graph generation. ?
         return nl;
+    }
+
+    void OnDrawGizmosSelected()
+    {
+        int nb = 0;
+        foreach (Node item in nodes)
+        {
+            Gizmos.color = Color.red;
+            Vector3 itemPos = new Vector3(item.position.x, item.position.y, 0);
+            Gizmos.DrawWireSphere(itemPos, 0.5f);
+            Handles.Label(itemPos, nb.ToString());
+            nb++;
+        }
+        
+        foreach  (Connection conect in connections)
+        {
+            Gizmos.color = Color.blue;
+            Vector3 conectPosOrigin = new Vector3(conect.linkedNodes[0].position.x, conect.linkedNodes[0].position.y, 0);
+            Vector3 conectPosDestination = new Vector3(conect.linkedNodes[1].position.x, conect.linkedNodes[1].position.y, 0);
+            Gizmos.DrawLine(conectPosOrigin, conectPosDestination);
+        }
+        
     }
 
     private List<Connection> GenerateListOfConnection(List<Node> nodes)
