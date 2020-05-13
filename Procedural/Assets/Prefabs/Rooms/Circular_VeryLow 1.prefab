@@ -242,7 +242,7 @@ GameObject:
   - component: {fileID: 8279372370806477393}
   - component: {fileID: 3153533405755549141}
   m_Layer: 0
-  m_Name: Circular_VeryLow
+  m_Name: Circular_VeryLow 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -279,7 +279,7 @@ MonoBehaviour:
   m_tilemaps:
   - {fileID: 1816447184505093659}
   - {fileID: 7439706364905893098}
-  m_selectedIndex: 1
+  m_selectedIndex: 0
   m_unselectedColorMultiplier: 1
   m_defaultTilemapWindowVisible: 0
   m_displayTilemapRList: 1
@@ -301,6 +301,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isStartRoom: 0
   position: {x: 1, y: 0}
+  difficulty: 0
 --- !u!50 &3153533405755549141
 Rigidbody2D:
   serializedVersion: 4
@@ -419,10 +420,10 @@ GameObject:
   - component: {fileID: 6335778941533870629}
   - component: {fileID: 899599960421253267}
   - component: {fileID: 7972815913399720407}
-  - component: {fileID: 3890820526639017811}
-  - component: {fileID: 5220187526292043549}
-  - component: {fileID: 9220587848463356945}
-  - component: {fileID: 1572970379729537698}
+  - component: {fileID: 4109871128246487558}
+  - component: {fileID: 2007371810630899981}
+  - component: {fileID: 5197159480286753338}
+  - component: {fileID: 3487801944898199443}
   m_Layer: 0
   m_Name: 0_0
   m_TagString: Untagged
@@ -557,7 +558,7 @@ EdgeCollider2D:
   - {x: 4, y: 3}
   - {x: 4, y: 2}
   - {x: 3, y: 2}
---- !u!68 &3890820526639017811
+--- !u!68 &4109871128246487558
 EdgeCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -578,7 +579,7 @@ EdgeCollider2D:
   - {x: 8, y: 3}
   - {x: 8, y: 2}
   - {x: 7, y: 2}
---- !u!68 &5220187526292043549
+--- !u!68 &2007371810630899981
 EdgeCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -599,7 +600,7 @@ EdgeCollider2D:
   - {x: 4, y: 7}
   - {x: 4, y: 6}
   - {x: 3, y: 6}
---- !u!68 &9220587848463356945
+--- !u!68 &5197159480286753338
 EdgeCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -620,7 +621,7 @@ EdgeCollider2D:
   - {x: 8, y: 7}
   - {x: 8, y: 6}
   - {x: 7, y: 6}
---- !u!68 &1572970379729537698
+--- !u!68 &3487801944898199443
 EdgeCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
