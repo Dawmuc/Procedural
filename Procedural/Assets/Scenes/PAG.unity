@@ -233,8 +233,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 47fd3eafbe99fde41951ab98eb02d679, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scriptableDirectoryPath: Assets/Scripts/Perso/ScriptableRoom
+  scriptableDirectoryPath: Assets/Prefabs/Rooms/Laure
   nbOfRooms: 50
+  nbOfSecondPath: 1
+  nbOfRoomsSecondPath: 9
+  roomSize: {x: 11, y: 9}
 --- !u!4 &1725189515
 Transform:
   m_ObjectHideFlags: 0
