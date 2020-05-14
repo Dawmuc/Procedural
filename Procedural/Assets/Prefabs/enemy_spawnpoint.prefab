@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1123449964143729732}
   - component: {fileID: 8748295079537376176}
+  - component: {fileID: 4598918749713747363}
   m_Layer: 0
   m_Name: enemy_spawnpoint
   m_TagString: Untagged
@@ -81,3 +82,22 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &4598918749713747363
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4784750822156129248}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a257ca2f6bd9f5c49ae047ae426e3ca2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemyList:
+  - {fileID: 4766563019477658476, guid: 390450945a2e1a74f838676cf451e67c, type: 3}
+  - {fileID: 4766563019477658476, guid: 626355fbb1a9895458209c15fd0f8f17, type: 3}
+  - {fileID: 4766563019477658476, guid: 96249e78d5e02ac40a94001fe3b0d11e, type: 3}
+  - {fileID: 4766563019477658476, guid: a30127cf95636cf4aae2c306bab81873, type: 3}
+  - {fileID: 4766563019477658476, guid: 2da4355809e39284db9e8965aed12a38, type: 3}
+  - {fileID: 4766563019477658476, guid: 803220195589b334eb0f5aad91740717, type: 3}
