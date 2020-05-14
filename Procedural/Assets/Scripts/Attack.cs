@@ -9,10 +9,19 @@ public class Attack : MonoBehaviour {
     public float knockbackSpeed = 3;
     public float knockbackDuration = 0.5f;
 	public LayerMask destroyOnHit;
+	public bool canAttackDistance;
+	public float speed;
+	public GameObject target;
 
 	[System.NonSerialized]
     public GameObject owner;
-	
+
+	private void Start()
+	{
+		target = GameObject.Find("Player");
+		transform.LookAt(target.transform.position);
+	}
+
 	// Update is called once per frame
 	void Update () {
 		if (duration <= 0.0f)
@@ -23,6 +32,11 @@ public class Attack : MonoBehaviour {
 		{
 			GameObject.Destroy(gameObject);
 		}
+		
+		if(canAttackDistance)
+		{
+			ShootTarget(target.transform.position);
+		}
 	}
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -31,5 +45,10 @@ public class Attack : MonoBehaviour {
 		{
 			GameObject.Destroy(gameObject);
 		}
+	}
+
+	private void ShootTarget(Vector3 targetPos)
+	{
+		transform.Translate(Vector3.forward * speed * Time.deltaTime);
 	}
 }
