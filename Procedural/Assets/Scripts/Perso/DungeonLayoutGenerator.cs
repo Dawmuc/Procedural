@@ -25,6 +25,7 @@ public class DungeonLayoutGenerator : MonoBehaviour
 	private ExitEnum[] possibleExits;
 
     List<Node> nodes;
+    List<Node> FirstPathWithExternalWall;
     List<Node> nodesSecondPath;
     List<Connection> connections;
     List<Connection> connectionsSecondpath;
@@ -43,7 +44,7 @@ public class DungeonLayoutGenerator : MonoBehaviour
 			connections = new List<Connection>();
 			nodes = GenerateListOfNode(InitListOfRoom(), nbOfRooms);
 		}
-        foreach (Node n in nodes) { GenerateRandomRoom(n.position * roomSize); }
+        //foreach (Node n in nodes) { GenerateRandomRoom(n.position * roomSize); }
 
 		Debug.Log("Fini");
     }
@@ -54,9 +55,12 @@ public class DungeonLayoutGenerator : MonoBehaviour
         {
             connectionsSecondpath = new List<Connection>();
             nodesSecondPath = GenerateListOfNodeForSecondPath(InitSecondPath(), nbOfRoomsSecondPath);
+            nodes.Concat(nodesSecondPath);
+            //nodesSecondPath = GenerateListOfNodeForSecondPath(InitSecondPath(), nbOfRoomsSecondPath);
         }
-        for (int i = 1; i < nodesSecondPath.Count; i++) { GenerateRandomRoom(nodesSecondPath[i].position * roomSize); }
-      
+        //for (int i = 1; i < nodesSecondPath.Count; i++) { GenerateRandomRoom(nodesSecondPath[i].position * roomSize); }
+        foreach (Node n in nodes) { GenerateRandomRoom(n.position * roomSize); }
+
     }
 
     private List<Node> InitListOfRoom()
@@ -80,6 +84,17 @@ public class DungeonLayoutGenerator : MonoBehaviour
         return new List<Node>() { SecondNode };
     }
 
+    /*
+    private List<Node> foundExternalNode()
+    {
+
+        foreach (Node n in nodes) {
+            if(n.exits.)
+        }
+
+        return FirstPathWithExternalWall;
+    }
+    */
 
     private List<Node> GenerateListOfNode(List<Node> nodes, int nbOfRooms)
     {
@@ -151,7 +166,8 @@ public class DungeonLayoutGenerator : MonoBehaviour
     private List<Node> GenerateListOfNodeForSecondPath(List<Node> nodesSecondPath, int nbOfRoomsSecondPath)
     {
         Debug.Log("second path start");
-        List<Node> nlSec = new List<Node>(nodesSecondPath);
+        //List<Node> nlSec = new List<Node>(nodesSecondPath);
+        List<Node> nlSec = new List<Node>(nodes);
         for (int i = 0; i < nbOfRoomsSecondPath - 1; i++)
         {
             if (i == 0)
