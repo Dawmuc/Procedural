@@ -4,6 +4,7 @@ using System.IO;
 using UnityEngine;
 using System.Linq;
 using UnityEditor;
+using System.Linq.Expressions;
 
 public enum ExitEnum
 {
@@ -76,7 +77,7 @@ public class DungeonLayoutGenerator : MonoBehaviour
 					}
 					if (it2 >= 10)
 					{
-						Debug.LogError("stack overflow");
+						Debug.LogError("restart hallway");
 						break;
 					}
 				}
@@ -84,7 +85,7 @@ public class DungeonLayoutGenerator : MonoBehaviour
 
 			if (it >= 30)
 			{
-				Debug.LogError("other path failure");
+				Debug.LogError("abort generation");
 				break;
 			}
 		}
@@ -123,14 +124,23 @@ public class DungeonLayoutGenerator : MonoBehaviour
 			// Set or Read nln[i] exit direction
 			if (i == 0)
 			{
-				List<ExitEnum> t = new List<ExitEnum>();
-				t = possibleExits.Except(o.exits).ToList();
-				if(t.Count == 0)
+				List<ExitEnum> pp = new List<ExitEnum>(possibleExits);
+
+				if (o.exits.Contains(ExitEnum.Up) || CheckIfNodeListContainPos(usedPos, new Vector2Int(pos.x, pos.y + 1)))
+					pp.Remove(ExitEnum.Up);
+				if (o.exits.Contains(ExitEnum.Down) || CheckIfNodeListContainPos(usedPos, new Vector2Int(pos.x, pos.y - 1)))
+					pp.Remove(ExitEnum.Down);
+				if (o.exits.Contains(ExitEnum.Left) || CheckIfNodeListContainPos(usedPos, new Vector2Int(pos.x - 1, pos.y)))
+					pp.Remove(ExitEnum.Left);
+				if (o.exits.Contains(ExitEnum.Right) || CheckIfNodeListContainPos(usedPos, new Vector2Int(pos.x + 1, pos.y)))
+					pp.Remove(ExitEnum.Right);
+
+				if (pp.Count == 0)
 				{
 					Debug.LogError("no path available from origin");
 					return nodeList;
 				}
-				dir = t[Random.Range(0, t.Count)];
+				dir = pp[Random.Range(0, pp.Count)];
 				o.exits.Add(dir);
 			}
 			else
