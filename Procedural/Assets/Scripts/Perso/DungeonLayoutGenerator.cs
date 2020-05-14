@@ -17,31 +17,43 @@ public enum ExitEnum
 public class DungeonLayoutGenerator : MonoBehaviour
 {
 	[SerializeField] private string[] scriptableDirectoryPath;
-	[SerializeField] private int nbOfRooms = 5;
+	[SerializeField] private int nbOfRooms;
 	[SerializeField] private int nbOfRoomInSameDirection = 2;
     [SerializeField] private Vector2Int roomSize = new Vector2Int(11, 9);
 	[SerializeField] private int[] otherPathLength;
 	[SerializeField] private bool generation;
 	private int randomStart;
-	private GameObject[] possiblesRooms;
+	private List<GameObject> possiblesRooms;
 	private List<ExitEnum> possibleExits;
 
     private List<Node> nodes;
 	List<Connection> tconnections;
 	List<Connection> connections;
 
+    private int randomBlock;
+    public  GameObject startRoom;
+    public  GameObject endRoom;
+
+
     private void Awake()
     {
-		// retrieve all possible rooms
-		if (scriptableDirectoryPath != null)
+        nbOfRooms = Random.Range(10, 20);
+        // retrieve all possible rooms
+        if (scriptableDirectoryPath != null)
 		{
 			List<string> fileNames = new List<string>();
 			for(int i = 0; i < scriptableDirectoryPath.Length; i++) { fileNames = AddToList(fileNames, Directory.GetFiles(scriptableDirectoryPath[i]).Where(path => !path.EndsWith(".meta")).ToList()); }
-			possiblesRooms = new GameObject[fileNames.Count];
-			for (int y = 0; y < fileNames.Count; y++) { possiblesRooms[y] = (GameObject)AssetDatabase.LoadAssetAtPath(fileNames[y], typeof(GameObject)); }
+            possiblesRooms = new List<GameObject>();
+			for (int y = 0; y < fileNames.Count; y++) { possiblesRooms.Add((GameObject)AssetDatabase.LoadAssetAtPath(fileNames[y], typeof(GameObject))); }
 		}
+        //startRoom = possiblesRooms.Find((x) => x.name == "Start").gameObject;
+        //endRoom = possiblesRooms.Find((x) => x.name == "End");
+        possiblesRooms.Remove(startRoom);
+        possiblesRooms.Remove(endRoom);
 
-		possibleExits = System.Enum.GetValues(typeof(ExitEnum)).Cast<ExitEnum>().ToList();
+
+
+        possibleExits = System.Enum.GetValues(typeof(ExitEnum)).Cast<ExitEnum>().ToList();
 
 		// First Path
 		nodes = InitListOfRoom();
@@ -96,8 +108,40 @@ public class DungeonLayoutGenerator : MonoBehaviour
     }
 	private void Start()
 	{
-		if (generation)
-			foreach (Node n in nodes) { GenerateRooms(n); }
+        if (generation)
+        {
+            randomBlock = Random.Range(1, 10);
+            int consec = 0;
+
+            for (int i = 0; i < nodes.Count; i++)
+            {
+                if( i == 0)
+                {
+                    GenerateStart(nodes[i]);
+                }
+                if( i == nbOfRooms)
+                {
+                    GenerateEnd(nodes[i]);
+                }
+                else
+                {
+                    GenerateRooms(nodes[i]);
+                    /*
+                    if (consec > 3 && consec >= randomBlock)
+                    {
+                        GenerateRooms(n);
+                        Debug.Log("need block)" + n.position);
+                        consec = 0;
+                    }
+                    else
+                    {
+                        GenerateRooms(n);
+                    }
+                    consec++
+                    */
+                }
+            }
+        }
 		Debug.Log("Fini");
 	}
 
@@ -273,11 +317,23 @@ public class DungeonLayoutGenerator : MonoBehaviour
 
 	private void GenerateRooms(Node n)
 	{
-		ExitManager em = Instantiate(possiblesRooms[Random.Range(0, possiblesRooms.Length)], (Vector2)(n.position * roomSize), Quaternion.identity).GetComponent<ExitManager>();
-		em.SetExits(n.exits);
+		ExitManager em = Instantiate(possiblesRooms[Random.Range(0, possiblesRooms.Count)], (Vector2)(n.position * roomSize), Quaternion.identity).GetComponent<ExitManager>();
+        em.SetExits(n.exits);
 	}
 
-	private List<string> AddToList(List<string> ls, List<string> nls)
+    private void GenerateStart(Node n)
+    {
+        ExitManager em = Instantiate(startRoom, (Vector2)(n.position * roomSize), Quaternion.identity).GetComponent<ExitManager>();
+        em.SetExits(n.exits);
+    }
+
+    private void GenerateEnd(Node n)
+    {
+        ExitManager em = Instantiate(endRoom, (Vector2)(n.position * roomSize), Quaternion.identity).GetComponent<ExitManager>();
+        em.SetExits(n.exits);
+    }
+
+    private List<string> AddToList(List<string> ls, List<string> nls)
 	{
 		List<string> t = new List<string>();
 
