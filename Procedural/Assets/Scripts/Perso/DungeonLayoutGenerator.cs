@@ -15,8 +15,9 @@ public enum ExitEnum
 
 public class DungeonLayoutGenerator : MonoBehaviour
 {
-	[SerializeField] private string scriptableDirectoryPath = "Assets/Prefabs/Rooms";
+	[SerializeField] private string[] scriptableDirectoryPath;
 	[SerializeField] private int nbOfRooms = 5;
+	[SerializeField] private int nbOfRoomInSameDirection = 2;
     [SerializeField] private int nbOfSecondPath = 5;
     [SerializeField] private int nbOfRoomsSecondPath = 8;
     private int randomStart;
@@ -33,33 +34,43 @@ public class DungeonLayoutGenerator : MonoBehaviour
     private void Awake()
     {
 		// retrieve all possible rooms
-		string[] fileNames = Directory.GetFiles(scriptableDirectoryPath).Where(path => !path.EndsWith(".meta")).ToArray();
-		possiblesRooms = new GameObject[fileNames.Length];
-		for (int i = 0; i < fileNames.Length; i++) { possiblesRooms[i] = (GameObject)AssetDatabase.LoadAssetAtPath(fileNames[i], typeof(GameObject)); }
+		if (scriptableDirectoryPath != null)
+		{
+			List<string> fileNames = new List<string>();
+			for(int i = 0; i < scriptableDirectoryPath.Length; i++) { fileNames = AddToList(fileNames, Directory.GetFiles(scriptableDirectoryPath[i]).Where(path => !path.EndsWith(".meta")).ToList()); }
+			possiblesRooms = new GameObject[fileNames.Count];
+			for (int y = 0; y < fileNames.Count; y++) { possiblesRooms[y] = (GameObject)AssetDatabase.LoadAssetAtPath(fileNames[y], typeof(GameObject)); }
+		}
 
 		possibleExits = System.Enum.GetValues(typeof(ExitEnum)).Cast<ExitEnum>().ToArray();
 
+		int it = 0;
 		while (nodes == null)
 		{
 			connections = new List<Connection>();
 			nodes = GenerateListOfNode(InitListOfRoom(), nbOfRooms);
+			
+			it++;
+			if (it > 10000)
+				break;
 		}
-        //foreach (Node n in nodes) { GenerateRandomRoom(n.position * roomSize); }
+
+		//foreach (Node n in nodes) { GenerateRandomRoom(n.position * roomSize); }
 
 		Debug.Log("Fini");
     }
 
     private void Start()
     {
-        while (nodesSecondPath == null)
-        {
-            connectionsSecondpath = new List<Connection>();
-            nodesSecondPath = GenerateListOfNodeForSecondPath(InitSecondPath(), nbOfRoomsSecondPath);
-            nodes.Concat(nodesSecondPath);
-            //nodesSecondPath = GenerateListOfNodeForSecondPath(InitSecondPath(), nbOfRoomsSecondPath);
-        }
-        //for (int i = 1; i < nodesSecondPath.Count; i++) { GenerateRandomRoom(nodesSecondPath[i].position * roomSize); }
-        foreach (Node n in nodes) { GenerateRandomRoom(n.position * roomSize); }
+        //while (nodesSecondPath == null)
+        //{
+        //    connectionsSecondpath = new List<Connection>();
+        //    nodesSecondPath = GenerateListOfNodeForSecondPath(InitSecondPath(), nbOfRoomsSecondPath);
+        //    nodes.Concat(nodesSecondPath);
+        //    //nodesSecondPath = GenerateListOfNodeForSecondPath(InitSecondPath(), nbOfRoomsSecondPath);
+        //}
+        ////for (int i = 1; i < nodesSecondPath.Count; i++) { GenerateRandomRoom(nodesSecondPath[i].position * roomSize); }
+        //foreach (Node n in nodes) { GenerateRandomRoom(n.position * roomSize); }
 
     }
 
@@ -99,6 +110,7 @@ public class DungeonLayoutGenerator : MonoBehaviour
     private List<Node> GenerateListOfNode(List<Node> nodes, int nbOfRooms)
     {
 		List<Node> nl = new List<Node>(nodes);
+		int _nbOfRoomInSameDirection = nbOfRoomInSameDirection;
 
 		for (int i = 0; i < nbOfRooms - 1; i++)
 		{
@@ -106,34 +118,92 @@ public class DungeonLayoutGenerator : MonoBehaviour
 			Vector2Int pos = new Vector2Int(nl[i].position.x, nl[i].position.y);
 
 			// place current node + 1
-			if (nl[i].exits.Contains(ExitEnum.Up))
-				pos = new Vector2Int(pos.x, pos.y + 1);
-			if (nl[i].exits.Contains(ExitEnum.Down))
-				pos = new Vector2Int(pos.x, pos.y - 1);
-			if (nl[i].exits.Contains(ExitEnum.Left))
-				pos = new Vector2Int(pos.x - 1, pos.y);
-			if (nl[i].exits.Contains(ExitEnum.Right))
-				pos = new Vector2Int(pos.x + 1, pos.y);
-
-			// prevent overlaping between nodes
-			List<ExitEnum> pathToRemove = new List<ExitEnum>();
-			if (CheckIfNodeListContainPos(nl, new Vector2Int(pos.x, pos.y + 1))) // up
-				pathToRemove.Add(ExitEnum.Up);
-			if (CheckIfNodeListContainPos(nl, new Vector2Int(pos.x, pos.y - 1))) // down
-				pathToRemove.Add(ExitEnum.Down);
-			if (CheckIfNodeListContainPos(nl, new Vector2Int(pos.x + 1, pos.y))) // right
-				pathToRemove.Add(ExitEnum.Right);
-			if (CheckIfNodeListContainPos(nl, new Vector2Int(pos.x - 1, pos.y))) // left
-				pathToRemove.Add(ExitEnum.Left);
-
-			// retrieve possible exit for new node
-			ExitEnum[] pe = possibleExits.Except(pathToRemove).ToArray();
-
-			// restart if path stucked
-			if (pe.Length == 0)
+			ExitEnum dir = ExitEnum.Down;
+			if (nl[i].exits.Contains(ExitEnum.Up) && !CheckIfNodeListContainPos(nl, new Vector2Int(pos.x, pos.y + 1)))
 			{
-				Debug.LogError("Retry");
-				return null;
+				pos = new Vector2Int(pos.x, pos.y + 1);
+				dir = ExitEnum.Up;
+			}
+			if (nl[i].exits.Contains(ExitEnum.Down) && !CheckIfNodeListContainPos(nl, new Vector2Int(pos.x, pos.y - 1)))
+			{
+				pos = new Vector2Int(pos.x, pos.y - 1);
+				dir = ExitEnum.Down;
+			}
+			if (nl[i].exits.Contains(ExitEnum.Left) && !CheckIfNodeListContainPos(nl, new Vector2Int(pos.x - 1, pos.y)))
+			{
+				pos = new Vector2Int(pos.x - 1, pos.y);
+				dir = ExitEnum.Left;
+			}
+			if (nl[i].exits.Contains(ExitEnum.Right) && !CheckIfNodeListContainPos(nl, new Vector2Int(pos.x + 1, pos.y)))
+			{
+				pos = new Vector2Int(pos.x + 1, pos.y);
+				dir = ExitEnum.Right;
+			}
+
+			List<ExitEnum> pathToRemove = new List<ExitEnum>();
+			ExitEnum[] pe = new ExitEnum[0];
+			if (_nbOfRoomInSameDirection == 0)
+			{
+				// prevent overlaping between nodes
+				if (CheckIfNodeListContainPos(nl, new Vector2Int(pos.x, pos.y + 1))) // up
+					pathToRemove.Add(ExitEnum.Up);
+				if (CheckIfNodeListContainPos(nl, new Vector2Int(pos.x, pos.y - 1))) // down
+					pathToRemove.Add(ExitEnum.Down);
+				if (CheckIfNodeListContainPos(nl, new Vector2Int(pos.x + 1, pos.y))) // right
+					pathToRemove.Add(ExitEnum.Right);
+				if (CheckIfNodeListContainPos(nl, new Vector2Int(pos.x - 1, pos.y))) // left
+					pathToRemove.Add(ExitEnum.Left);
+
+				pathToRemove.Add(dir);
+
+				// retrieve possible exit for new node
+				pe = possibleExits.Except(pathToRemove).ToArray();
+
+				// restart if path stucked
+				if (pe.Length == 0)
+				{
+					Debug.LogError("Retry");
+					return null;
+				}
+
+				_nbOfRoomInSameDirection = nbOfRoomInSameDirection;
+			}
+			else
+			{
+				switch (dir)
+				{
+					case ExitEnum.Up:
+						if (CheckIfNodeListContainPos(nl, new Vector2Int(pos.x, pos.y + 1)))
+						{
+							Debug.LogError("Retry");
+							return null;
+						}
+						break;
+					case ExitEnum.Down:
+						if (CheckIfNodeListContainPos(nl, new Vector2Int(pos.x, pos.y - 1)))
+						{
+							Debug.LogError("Retry");
+							return null;
+						}
+						break;
+					case ExitEnum.Left:
+						if (CheckIfNodeListContainPos(nl, new Vector2Int(pos.x + 1, pos.y)))
+						{
+							Debug.LogError("Retry");
+							return null;
+						}
+						break;
+					case ExitEnum.Right:
+						if (CheckIfNodeListContainPos(nl, new Vector2Int(pos.x - 1, pos.y)))
+						{
+							Debug.LogError("Retry");
+							return null;
+						}
+						break;
+				}
+
+				pe = new ExitEnum[] { dir };
+				_nbOfRoomInSameDirection -= 1;
 			}
 
 			// creqte new node
@@ -145,6 +215,7 @@ public class DungeonLayoutGenerator : MonoBehaviour
 			nl.Add(n);
 			
 			connections.Add(new Connection(new Node[] { nl[i], nl[i + 1] }));
+
 		}
 		
 		return nl;
@@ -283,7 +354,39 @@ public class DungeonLayoutGenerator : MonoBehaviour
         return nlSec;
     }
 
-    void OnDrawGizmosSelected()
+	private List<string> AddToList(List<string> ls, List<string> nls)
+	{
+		List<string> t = new List<string>();
+
+		foreach (string s in ls)
+		{
+			t.Add(s);
+		}
+		foreach (string s in nls)
+		{
+			t.Add(s);
+		}
+
+		return t;
+	}
+
+	private List<Node> AddToList(List<Node> ln, List<Node> nln)
+	{
+		List<Node> t = new List<Node>();
+
+		foreach (Node s in ln)
+		{
+			t.Add(s);
+		}
+		foreach (Node s in nln)
+		{
+			t.Add(s);
+		}
+
+		return t;
+	}
+
+	void OnDrawGizmosSelected()
     {
         int nb = 0;
         int nbSec = 0;
