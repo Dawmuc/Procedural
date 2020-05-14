@@ -18,8 +18,6 @@ public class DungeonLayoutGenerator : MonoBehaviour
 	[SerializeField] private string[] scriptableDirectoryPath;
 	[SerializeField] private int nbOfRooms = 5;
 	[SerializeField] private int nbOfRoomInSameDirection = 2;
-    [SerializeField] private int nbOfSecondPath = 5;
-    [SerializeField] private int nbOfRoomsSecondPath = 8;
     [SerializeField] private Vector2Int roomSize = new Vector2Int(11, 9);
 	[SerializeField] private int[] otherPathLength;
     private int randomStart;
@@ -110,7 +108,7 @@ public class DungeonLayoutGenerator : MonoBehaviour
     private List<Node> GenerateListOfNode(Node o, List<Node> nodeList, int nbOfRooms)
     {
 		List<Node> nln = new List<Node>() { o };
-		List<Node> usedSlot = new List<Node>(nodeList);
+		List<Node> usedPos = new List<Node>(nodeList);
 		List<Connection> nlc = new List<Connection>(tconnections); 
 		int _nbOfRoomInSameDirection = nbOfRoomInSameDirection;
 
@@ -127,17 +125,23 @@ public class DungeonLayoutGenerator : MonoBehaviour
 			{
 				List<ExitEnum> t = new List<ExitEnum>();
 				t = possibleExits.Except(o.exits).ToList();
+				if(t.Count == 0)
+				{
+					Debug.LogError("no path available from origin");
+					return nodeList;
+				}
 				dir = t[Random.Range(0, t.Count)];
+				o.exits.Add(dir);
 			}
 			else
 			{
-				if (nln[i].exits.Contains(ExitEnum.Up) && !CheckIfNodeListContainPos(usedSlot, new Vector2Int(pos.x, pos.y + 1)))
+				if (nln[i].exits.Contains(ExitEnum.Up) && !CheckIfNodeListContainPos(usedPos, new Vector2Int(pos.x, pos.y + 1)))
 					dir = ExitEnum.Up;
-				if (nln[i].exits.Contains(ExitEnum.Down) && !CheckIfNodeListContainPos(usedSlot, new Vector2Int(pos.x, pos.y - 1)))
+				if (nln[i].exits.Contains(ExitEnum.Down) && !CheckIfNodeListContainPos(usedPos, new Vector2Int(pos.x, pos.y - 1)))
 					dir = ExitEnum.Down;
-				if (nln[i].exits.Contains(ExitEnum.Left) && !CheckIfNodeListContainPos(usedSlot, new Vector2Int(pos.x - 1, pos.y)))
+				if (nln[i].exits.Contains(ExitEnum.Left) && !CheckIfNodeListContainPos(usedPos, new Vector2Int(pos.x - 1, pos.y)))
 					dir = ExitEnum.Left;
-				if (nln[i].exits.Contains(ExitEnum.Right) && !CheckIfNodeListContainPos(usedSlot, new Vector2Int(pos.x + 1, pos.y)))
+				if (nln[i].exits.Contains(ExitEnum.Right) && !CheckIfNodeListContainPos(usedPos, new Vector2Int(pos.x + 1, pos.y)))
 					dir = ExitEnum.Right;
 			}
 
@@ -167,25 +171,25 @@ public class DungeonLayoutGenerator : MonoBehaviour
 			List<ExitEnum> pathToRemove = new List<ExitEnum>();
 			ExitEnum[] pe = new ExitEnum[0];
 			bool isGoingForward = false;
-			if (_nbOfRoomInSameDirection != 0)
+			if (_nbOfRoomInSameDirection != 0 && i != 0)
 			{
 				isGoingForward = true;
 				switch (dir)
 				{
 					case ExitEnum.Up:
-						if (CheckIfNodeListContainPos(usedSlot, new Vector2Int(pos.x, pos.y + 1)))
+						if (CheckIfNodeListContainPos(usedPos, new Vector2Int(pos.x, pos.y + 1)))
 							isGoingForward = false;
 						break;
 					case ExitEnum.Down:
-						if (CheckIfNodeListContainPos(usedSlot, new Vector2Int(pos.x, pos.y - 1)))
+						if (CheckIfNodeListContainPos(usedPos, new Vector2Int(pos.x, pos.y - 1)))
 							isGoingForward = false;
 						break;
 					case ExitEnum.Left:
-						if (CheckIfNodeListContainPos(usedSlot, new Vector2Int(pos.x - 1, pos.y)))
+						if (CheckIfNodeListContainPos(usedPos, new Vector2Int(pos.x - 1, pos.y)))
 							isGoingForward = false;
 						break;
 					case ExitEnum.Right:
-						if (CheckIfNodeListContainPos(usedSlot, new Vector2Int(pos.x + 1, pos.y)))
+						if (CheckIfNodeListContainPos(usedPos, new Vector2Int(pos.x + 1, pos.y)))
 							isGoingForward = false;
 						break;
 				}
@@ -199,13 +203,13 @@ public class DungeonLayoutGenerator : MonoBehaviour
 			if(!isGoingForward)
 			{
 				// prevent overlaping between nodes
-				if (CheckIfNodeListContainPos(usedSlot, new Vector2Int(pos.x, pos.y + 1))) // up
+				if (CheckIfNodeListContainPos(usedPos, new Vector2Int(pos.x, pos.y + 1))) // up
 					pathToRemove.Add(ExitEnum.Up);
-				if (CheckIfNodeListContainPos(usedSlot, new Vector2Int(pos.x, pos.y - 1))) // down
+				if (CheckIfNodeListContainPos(usedPos, new Vector2Int(pos.x, pos.y - 1))) // down
 					pathToRemove.Add(ExitEnum.Down);
-				if (CheckIfNodeListContainPos(usedSlot, new Vector2Int(pos.x + 1, pos.y))) // right
+				if (CheckIfNodeListContainPos(usedPos, new Vector2Int(pos.x + 1, pos.y))) // right
 					pathToRemove.Add(ExitEnum.Right);
-				if (CheckIfNodeListContainPos(usedSlot, new Vector2Int(pos.x - 1, pos.y))) // left
+				if (CheckIfNodeListContainPos(usedPos, new Vector2Int(pos.x - 1, pos.y))) // left
 					pathToRemove.Add(ExitEnum.Left);
 
 				pathToRemove.Add(dir);
@@ -216,7 +220,7 @@ public class DungeonLayoutGenerator : MonoBehaviour
 				// restart if path stucked
 				if (pe.Length == 0)
 				{
-					Debug.LogError("Failure");
+					Debug.LogError("Hallway cannot continue");
 					return nodeList;
 				}
 
@@ -231,7 +235,7 @@ public class DungeonLayoutGenerator : MonoBehaviour
 			n.exits.Add(exitToAddToNewNode);
 
 			nln.Add(n);
-			usedSlot.Add(n);
+			usedPos.Add(n);
 			
 			nlc.Add(new Connection(new Node[] { nln[i], nln[i + 1] }));
 
@@ -318,31 +322,27 @@ public class DungeonLayoutGenerator : MonoBehaviour
 
 	void OnDrawGizmosSelected()
     {
-        int nb = 0;
-        int nbSec = 0;
-
 		if (nodes == null )
 			return;
+		
+		Gizmos.color = Color.white;
 
-        foreach (Node item in nodes)
-        {
-            Gizmos.color = Color.white;
-            Vector3 itemPos = new Vector3(item.position.x, item.position.y, 0) * (Vector2)roomSize;
-            Gizmos.DrawWireSphere(itemPos, 0.3f);
-            Handles.Label(itemPos, nb.ToString());
-            nb++;
-        }
+		for (int i = 0; i < nodes.Count; i++)
+		{
+			Vector3 itemPos = new Vector3(nodes[i].position.x, nodes[i].position.y, 0) * (Vector2)roomSize;
+			Gizmos.DrawWireSphere(itemPos, 0.3f);
+			Handles.Label(itemPos, (i+1).ToString());
+		}
 
 		if (connections == null)
 			return;
 
-		foreach  (Connection conect in connections)
-        {
-            Gizmos.color = Color.white;
-            Vector3 conectPosOrigin = new Vector3(conect.linkedNodes[0].position.x, conect.linkedNodes[0].position.y, 0) * (Vector2)roomSize;
-            Vector3 conectPosDestination = new Vector3(conect.linkedNodes[1].position.x, conect.linkedNodes[1].position.y, 0) * (Vector2)roomSize;
-            Gizmos.DrawLine(conectPosOrigin, conectPosDestination);
-        }
+		foreach (Connection conect in connections)
+		{
+			Vector3 conectPosOrigin = new Vector3(conect.linkedNodes[0].position.x, conect.linkedNodes[0].position.y, 0) * (Vector2)roomSize;
+			Vector3 conectPosDestination = new Vector3(conect.linkedNodes[1].position.x, conect.linkedNodes[1].position.y, 0) * (Vector2)roomSize;
+			Gizmos.DrawLine(conectPosOrigin, conectPosDestination);
+		}
 	}
 
 }
