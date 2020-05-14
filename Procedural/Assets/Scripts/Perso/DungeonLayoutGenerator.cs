@@ -126,7 +126,7 @@ public class DungeonLayoutGenerator : MonoBehaviour
 			if (i == 0)
 			{
 				List<ExitEnum> t = new List<ExitEnum>();
-				t = possibleExits.Except(nln[i].exits).ToList();
+				t = possibleExits.Except(o.exits).ToList();
 				dir = t[Random.Range(0, t.Count)];
 			}
 			else
@@ -217,7 +217,7 @@ public class DungeonLayoutGenerator : MonoBehaviour
 				if (pe.Length == 0)
 				{
 					Debug.LogError("Failure");
-					return nodes;
+					return nodeList;
 				}
 
 				_nbOfRoomInSameDirection = Random.Range(1, nbOfRoomInSameDirection + 1);

@@ -250,7 +250,7 @@ MonoBehaviour:
   nbOfSecondPath: 0
   nbOfRoomsSecondPath: 0
   roomSize: {x: 11, y: 9}
-  otherPathLength: 0300000003000000
+  otherPathLength: 0300000003000000030000000300000003000000
 --- !u!4 &1030471502
 Transform:
   m_ObjectHideFlags: 0
