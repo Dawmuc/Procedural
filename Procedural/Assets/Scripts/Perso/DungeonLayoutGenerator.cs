@@ -45,10 +45,7 @@ public class DungeonLayoutGenerator : MonoBehaviour
 			for(int i = 0; i < scriptableDirectoryPath.Length; i++) { fileNames = AddToList(fileNames, Directory.GetFiles(scriptableDirectoryPath[i]).Where(path => !path.EndsWith(".meta")).ToList()); }
             possiblesRooms = new List<GameObject>();
             for (int y = 0; y < fileNames.Count; y++) { possiblesRooms.Add((GameObject)AssetDatabase.LoadAssetAtPath(fileNames[y], typeof(GameObject))); }
-            //for (int y = 0; y < fileNames.Count; y++) { possiblesRooms[y](GameObject)AssetDatabase.LoadAssetAtPath(fileNames[y], typeof(GameObject)); }
 		}
-        //startRoom = possiblesRooms.Find((x) => x.name == "Start").gameObject;
-        //endRoom = possiblesRooms.Find((x) => x.name == "End");
         possiblesRooms.Remove(startRoom);
         possiblesRooms.Remove(endRoom);
 
@@ -114,13 +111,13 @@ public class DungeonLayoutGenerator : MonoBehaviour
             randomBlock = Random.Range(1, 10);
             int consec = 0;
 
-            for (int i = 0; i < nodes.Count; i++)
+            for (int i = 0; i < nbOfRooms; i++)
             {
-                if( i == 0)
+                if (i == 0)
                 {
                     GenerateStart(nodes[i]);
                 }
-                if( i == nbOfRooms -1)
+                else if (i == nbOfRooms - 1)
                 {
                     GenerateEnd(nodes[i]);
                 }
@@ -130,18 +127,35 @@ public class DungeonLayoutGenerator : MonoBehaviour
                     /*
                     if (consec > 3 && consec >= randomBlock)
                     {
-                        GenerateRooms(n);
-                        Debug.Log("need block)" + n.position);
+                        if(nodes[i-1].exits.Contains(ExitEnum.Up))
+                            nodes[i].exits.Remove(ExitEnum.Up);
+                        if (nodes[i - 1].exits.Contains(ExitEnum.Down))
+                            nodes[i].exits.Remove(ExitEnum.Down);
+                        if (nodes[i - 1].exits.Contains(ExitEnum.Right))
+                            nodes[i].exits.Remove(ExitEnum.Right);
+                        if (nodes[i - 1].exits.Contains(ExitEnum.Left))
+                            nodes[i].exits.Remove(ExitEnum.Left);
+
+                        GenerateRooms(nodes[i]);
+                        
                         consec = 0;
                     }
                     else
                     {
-                        GenerateRooms(n);
+                        GenerateRooms(nodes[i]);
                     }
-                    consec++
-                    */
+                    consec++;
+                    
+                }
+                */
                 }
             }
+            for (int i = nbOfRooms ; i < nodes.Count; i++)
+            {
+                GenerateRooms(nodes[i]);
+                
+            }
+            
         }
 		Debug.Log("Fini");
 	}
