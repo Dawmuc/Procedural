@@ -44,7 +44,8 @@ public class DungeonLayoutGenerator : MonoBehaviour
 			List<string> fileNames = new List<string>();
 			for(int i = 0; i < scriptableDirectoryPath.Length; i++) { fileNames = AddToList(fileNames, Directory.GetFiles(scriptableDirectoryPath[i]).Where(path => !path.EndsWith(".meta")).ToList()); }
             possiblesRooms = new List<GameObject>();
-			for (int y = 0; y < fileNames.Count; y++) { possiblesRooms.Add((GameObject)AssetDatabase.LoadAssetAtPath(fileNames[y], typeof(GameObject))); }
+            for (int y = 0; y < fileNames.Count; y++) { possiblesRooms.Add((GameObject)AssetDatabase.LoadAssetAtPath(fileNames[y], typeof(GameObject))); }
+            //for (int y = 0; y < fileNames.Count; y++) { possiblesRooms[y](GameObject)AssetDatabase.LoadAssetAtPath(fileNames[y], typeof(GameObject)); }
 		}
         //startRoom = possiblesRooms.Find((x) => x.name == "Start").gameObject;
         //endRoom = possiblesRooms.Find((x) => x.name == "End");
@@ -119,7 +120,7 @@ public class DungeonLayoutGenerator : MonoBehaviour
                 {
                     GenerateStart(nodes[i]);
                 }
-                if( i == nbOfRooms)
+                if( i == nbOfRooms -1)
                 {
                     GenerateEnd(nodes[i]);
                 }
