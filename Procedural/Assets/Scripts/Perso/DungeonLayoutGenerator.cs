@@ -55,6 +55,8 @@ public class DungeonLayoutGenerator : MonoBehaviour
             connectionsSecondpath = new List<Connection>();
             nodesSecondPath = GenerateListOfNodeForSecondPath(InitSecondPath(), nbOfRoomsSecondPath);
         }
+        for (int i = 1; i < nodesSecondPath.Count; i++) { GenerateRandomRoom(nodesSecondPath[i].position * roomSize); }
+      
     }
 
     private List<Node> InitListOfRoom()
@@ -186,7 +188,6 @@ public class DungeonLayoutGenerator : MonoBehaviour
                 if (CheckIfNodeListContainPos(nlSec, new Vector2Int(pos.x - 1, pos.y))) // left
                     pathToRemove.Add(ExitEnum.Left);
 
-
                 // retrieve possible exit for new node
                 ExitEnum[] pe = possibleExits.Except(pathToRemove).ToArray();
 
@@ -308,4 +309,5 @@ public class DungeonLayoutGenerator : MonoBehaviour
         }
 
     }
+
 }

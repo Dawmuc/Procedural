@@ -236,7 +236,7 @@ MonoBehaviour:
   scriptableDirectoryPath: Assets/Prefabs/Rooms/Laure
   nbOfRooms: 50
   nbOfSecondPath: 1
-  nbOfRoomsSecondPath: 9
+  nbOfRoomsSecondPath: 8
   roomSize: {x: 11, y: 9}
 --- !u!4 &1725189515
 Transform:
