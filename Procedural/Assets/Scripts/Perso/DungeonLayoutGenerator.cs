@@ -125,19 +125,66 @@ public class DungeonLayoutGenerator : MonoBehaviour
                 {
                     GenerateRooms(nodes[i]);
                     /*
+                    // level de spawn des salles. // l enum a pas la meme range que difficulte ?
+                    if( i <= 3)
+                    {
+                        nodes[i].difficulty = Random.Range(0, 2);
+                        GenerateEnd(nodes[i]);
+                    }
+                    if (i > 3 && i <=6)
+                    {
+                        nodes[i].difficulty = Random.Range(0, 2);
+                        GenerateEnd(nodes[i]);
+                    }
+                    if (i > 6 && i <= 10)
+                    {
+                        nodes[i].difficulty = Random.Range(0, 3);
+                        GenerateEnd(nodes[i]);
+                    }
+                    if (i > 10 && i <= 14)
+                    {
+                        nodes[i].difficulty = Random.Range(1, 3);
+                        GenerateEnd(nodes[i]);
+                    }
+                    if (i > 14 && i <= 17)
+                    {
+                        nodes[i].difficulty = Random.Range(2, 4);
+                        GenerateEnd(nodes[i]);
+                    }
+                    if (i > 17 && i <= 20)
+                    {
+                        nodes[i].difficulty = Random.Range(3, 4);
+                        GenerateEnd(nodes[i]);
+                    }
+                    */
+
+                    // a rajouter en englobant tout les niveaux la fermeture des portes
+                    /*
                     if (consec > 3 && consec >= randomBlock)
                     {
-                        if(nodes[i-1].exits.Contains(ExitEnum.Up))
-                            nodes[i].exits.Remove(ExitEnum.Up);
-                        if (nodes[i - 1].exits.Contains(ExitEnum.Down))
-                            nodes[i].exits.Remove(ExitEnum.Down);
-                        if (nodes[i - 1].exits.Contains(ExitEnum.Right))
-                            nodes[i].exits.Remove(ExitEnum.Right);
-                        if (nodes[i - 1].exits.Contains(ExitEnum.Left))
-                            nodes[i].exits.Remove(ExitEnum.Left);
-
                         GenerateRooms(nodes[i]);
-                        
+
+                        if (nodes[i].exits.Contains(ExitEnum.Up))
+                        {
+                            // acceder a la door du prefab generer juste avant.
+                            Debug.Log("blocague porte Up");
+                        }
+                        if (nodes[i].exits.Contains(ExitEnum.Down))
+                        {
+                            // acceder a la door du prefab generer juste avant.
+                            Debug.Log("blocague porte Down");
+                        }
+                        if (nodes[i].exits.Contains(ExitEnum.Right))
+                        {
+                            // acceder a la door du prefab generer juste avant.
+                            Debug.Log("blocague porte Right");
+                        }
+                        if (nodes[i].exits.Contains(ExitEnum.Left))
+                        {
+                            // acceder a la door du prefab generer juste avant.
+                            Debug.Log("blocague porte Left");
+                        }
+
                         consec = 0;
                     }
                     else
@@ -145,9 +192,7 @@ public class DungeonLayoutGenerator : MonoBehaviour
                         GenerateRooms(nodes[i]);
                     }
                     consec++;
-                    
-                }
-                */
+                    */
                 }
             }
             for (int i = nbOfRooms ; i < nodes.Count; i++)
