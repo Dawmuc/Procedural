@@ -248,7 +248,8 @@ MonoBehaviour:
   nbOfRooms: 20
   nbOfRoomInSameDirection: 2
   roomSize: {x: 11, y: 9}
-  otherPathLength: 03000000030000000300000003000000030000000300000003000000030000000300000003000000
+  otherPathLength: 080000000800000008000000
+  generation: 1
 --- !u!4 &1030471502
 Transform:
   m_ObjectHideFlags: 0

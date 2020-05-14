@@ -21,7 +21,8 @@ public class DungeonLayoutGenerator : MonoBehaviour
 	[SerializeField] private int nbOfRoomInSameDirection = 2;
     [SerializeField] private Vector2Int roomSize = new Vector2Int(11, 9);
 	[SerializeField] private int[] otherPathLength;
-    private int randomStart;
+	[SerializeField] private bool generation;
+	private int randomStart;
 	private GameObject[] possiblesRooms;
 	private List<ExitEnum> possibleExits;
 
@@ -92,12 +93,15 @@ public class DungeonLayoutGenerator : MonoBehaviour
 		nodes = _nodes;
 		connections = tconnections;
 
-
-		//foreach (Node n in nodes) { GenerateRandomRoom(n.position * roomSize); }
-		Debug.Log("Fini");
     }
+	private void Start()
+	{
+		if (generation)
+			foreach (Node n in nodes) { GenerateRooms(n); }
+		Debug.Log("Fini");
+	}
 
-    private List<Node> InitListOfRoom()
+	private List<Node> InitListOfRoom()
     {
         Node originNode = new Node();
         originNode.difficulty = 0;
@@ -106,7 +110,7 @@ public class DungeonLayoutGenerator : MonoBehaviour
         return new List<Node>() { originNode };
     }
 
-    private List<Node> GenerateListOfNode(Node o, List<Node> nodeList, int nbOfRooms)
+    private List<Node> GenerateListOfNode(Node o, List<Node> nodeList, int nbOfRooms, bool Main = false)
     {
 		List<Node> nln = new List<Node>() { o };
 		List<Node> usedPos = new List<Node>(nodeList);
@@ -241,8 +245,11 @@ public class DungeonLayoutGenerator : MonoBehaviour
 			Node n = new Node();
 			n.position = pos;
 			n.difficulty = 0;
-			n.exits.Add(pe[Random.Range(0, pe.Length)]);
 			n.exits.Add(exitToAddToNewNode);
+
+			if (i != nbOfRooms - 2)
+				n.exits.Add(pe[Random.Range(0, pe.Length)]);
+			
 
 			nln.Add(n);
 			usedPos.Add(n);
@@ -264,9 +271,10 @@ public class DungeonLayoutGenerator : MonoBehaviour
 			return false;
 	}
 
-	private void GenerateRandomRoom(Vector2 pos)
+	private void GenerateRooms(Node n)
 	{
-		Instantiate(possiblesRooms[Random.Range(0, possiblesRooms.Length)], pos, Quaternion.identity);
+		ExitManager em = Instantiate(possiblesRooms[Random.Range(0, possiblesRooms.Length)], (Vector2)(n.position * roomSize), Quaternion.identity).GetComponent<ExitManager>();
+		em.SetExits(n.exits);
 	}
 
 	private List<string> AddToList(List<string> ls, List<string> nls)
