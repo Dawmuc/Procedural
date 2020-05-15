@@ -27,6 +27,7 @@ public class DungeonLayoutGenerator : MonoBehaviour
     private List<ExitEnum> possibleExits;
 
     private List<Node> nodes;
+	private List<ExitManager> roomsExit;
 	List<Connection> tconnections;
 	List<Connection> connections;
 
@@ -52,10 +53,10 @@ public class DungeonLayoutGenerator : MonoBehaviour
 		}
         possiblesRooms.Remove(startRoom);
         possiblesRooms.Remove(endRoom);
-        
 
+		roomsExit = new List<ExitManager>();
 
-        possibleExits = System.Enum.GetValues(typeof(ExitEnum)).Cast<ExitEnum>().ToList();
+		possibleExits = System.Enum.GetValues(typeof(ExitEnum)).Cast<ExitEnum>().ToList();
 
 		// First Path
 		nodes = InitListOfRoom();
@@ -113,8 +114,8 @@ public class DungeonLayoutGenerator : MonoBehaviour
         if (generation)
         {
             randomBlock = Random.Range(1, 10);
-            int consec = 0;
 
+			// chemin principale
             for (int i = 0; i < nbOfRooms; i++)
             {
                 if (i == 0)
@@ -152,51 +153,23 @@ public class DungeonLayoutGenerator : MonoBehaviour
                     {
                         GenerateRooms(nodes[i], Random.Range(3, 4));
                     }
-                    
 
-                    // a rajouter en englobant tout les niveaux la fermeture des portes
-                    /*
-                    if (consec > 3 && consec >= randomBlock)
-                    {
-                        GenerateRooms(nodes[i]);
 
-                        if (nodes[i].exits.Contains(ExitEnum.Up))
-                        {
-                            // acceder a la door du prefab generer juste avant.
-                            Debug.Log("blocague porte Up");
-                        }
-                        if (nodes[i].exits.Contains(ExitEnum.Down))
-                        {
-                            // acceder a la door du prefab generer juste avant.
-                            Debug.Log("blocague porte Down");
-                        }
-                        if (nodes[i].exits.Contains(ExitEnum.Right))
-                        {
-                            // acceder a la door du prefab generer juste avant.
-                            Debug.Log("blocague porte Right");
-                        }
-                        if (nodes[i].exits.Contains(ExitEnum.Left))
-                        {
-                            // acceder a la door du prefab generer juste avant.
-                            Debug.Log("blocague porte Left");
-                        }
-
-                        consec = 0;
-                    }
-                    else
-                    {
-                        GenerateRooms(nodes[i]);
-                    }
-                    consec++;
-                    */
                 }
             }
-            for (int i = nbOfRooms ; i < nodes.Count; i++)
+
+			// chemin secondaire
+			for (int i = nbOfRooms ; i < nodes.Count; i++)
             {
                 GenerateRooms(nodes[i], Random.Range(0,4));
             }
 
-        }
+			// a rajouter en englobant tout les niveaux la fermeture des portes
+			int plop = Random.Range(3, randomBlock - 1);
+			LockDoorToNextRoom(plop);
+			Debug.Log(plop);
+
+		}
 		Debug.Log("Fini");
 	}
 
@@ -371,21 +344,62 @@ public class DungeonLayoutGenerator : MonoBehaviour
 	private void GenerateRooms(Node n, int difficulty)
 	{
         List<Room> ad = possiblesRooms.Where(a => a.difficulty == (Room.RoomTag)difficulty).ToList();
-		ExitManager em = Instantiate(possiblesRooms[Random.Range(0, possiblesRooms.Count)], (Vector2)(n.position * roomSize), Quaternion.identity).GetComponent<ExitManager>();
+		Room r = possiblesRooms[Random.Range(0, possiblesRooms.Count)];
+		ExitManager em = Instantiate(r, (Vector2)(n.position * roomSize), Quaternion.identity).GetComponent<ExitManager>();
+		em.Init();
         em.SetExits(n.exits);
+		roomsExit.Add(r.GetComponent<ExitManager>());
 	}
 
     private void GenerateStart(Node n)
     {
         ExitManager em = Instantiate(startRoom, (Vector2)(n.position * roomSize), Quaternion.identity).GetComponent<ExitManager>();
+		em.Init();
         em.SetExits(n.exits);
-    }
+		roomsExit.Add(startRoom.GetComponent<ExitManager>());
+	}
 
     private void GenerateEnd(Node n)
     {
         ExitManager em = Instantiate(endRoom, (Vector2)(n.position * roomSize), Quaternion.identity).GetComponent<ExitManager>();
+		em.Init();
         em.SetExits(n.exits);
-    }
+		roomsExit.Add(endRoom.GetComponent<ExitManager>());
+	}
+
+	private void LockDoorToNextRoom(int index)
+	{
+		if (index >= nodes.Count - 2)
+			throw new System.Exception($"index must be inferior to {nodes.Count - 2}");
+
+		Vector2 v =  nodes[index + 1].position - nodes[index].position;
+		ExitEnum dirNode1 = ExitEnum.Down;
+		ExitEnum dirNode2 = ExitEnum.Down;
+
+		if (v.y > 0f)
+		{
+			dirNode1 = ExitEnum.Up;
+			dirNode2 = ExitEnum.Down;
+		}
+		else if (v.y < 0f)
+		{
+			dirNode1 = ExitEnum.Down;
+			dirNode2 = ExitEnum.Up;
+		}
+		else if (v.x > 0f)
+		{
+			dirNode1 = ExitEnum.Right;
+			dirNode2 = ExitEnum.Left;
+		}
+		else if (v.y < 0f)
+		{
+			dirNode1 = ExitEnum.Left;
+			dirNode2 = ExitEnum.Right;
+		}
+
+		roomsExit[index].SetExits(new List<ExitEnum>() { dirNode1 }, Door.STATE.CLOSED);
+		roomsExit[index + 1].SetExits(new List<ExitEnum>() { dirNode2 }, Door.STATE.CLOSED);
+	}
 
     private List<string> AddToList(List<string> ls, List<string> nls)
 	{

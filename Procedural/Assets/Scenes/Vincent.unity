@@ -429,9 +429,9 @@ MonoBehaviour:
   roomSize: {x: 11, y: 9}
   otherPathLength: 080000000800000008000000
   generation: 1
-  startRoom: {fileID: 6682222019322855666, guid: 191253d355819e044839ee773e70dfc5,
+  startRoom: {fileID: 8279372370806477393, guid: 191253d355819e044839ee773e70dfc5,
     type: 3}
-  endRoom: {fileID: 6682222019322855666, guid: 4b768ded999bab24e8a524bb9d32b215, type: 3}
+  endRoom: {fileID: 8279372370806477393, guid: 4b768ded999bab24e8a524bb9d32b215, type: 3}
 --- !u!4 &1030471502
 Transform:
   m_ObjectHideFlags: 0

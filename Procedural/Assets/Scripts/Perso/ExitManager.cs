@@ -10,7 +10,7 @@ public class ExitManager : MonoBehaviour
 	public Door leftDoor { get; set; }
 	public Door rightDoor { get; set; }
 
-	private void Awake()
+	public void Init()
 	{
 		Door[] doors = GetComponentsInChildren<Door>();
 		foreach (Door d in doors) { d.SetState(Door.STATE.WALL); }
@@ -29,15 +29,15 @@ public class ExitManager : MonoBehaviour
 		rightDoor = doors.Where(d => d.transform.position.x == t).ToArray()[0];
 	}
 
-	public void SetExits(List<ExitEnum> le)
+	public void SetExits(List<ExitEnum> le, Door.STATE state = Door.STATE.OPEN)
 	{
 		if (le.Contains(ExitEnum.Up))
-			upDoor.SetState(Door.STATE.OPEN);
+			upDoor.SetState(state);
 		if (le.Contains(ExitEnum.Down))
-			downDoor.SetState(Door.STATE.OPEN);
+			downDoor.SetState(state);
 		if (le.Contains(ExitEnum.Left))
-			leftDoor.SetState(Door.STATE.OPEN);
+			leftDoor.SetState(state);
 		if (le.Contains(ExitEnum.Right))
-			rightDoor.SetState(Door.STATE.OPEN);
+			rightDoor.SetState(state);
 	}
 }
