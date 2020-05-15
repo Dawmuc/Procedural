@@ -23,8 +23,7 @@ public class DungeonLayoutGenerator : MonoBehaviour
 	[SerializeField] private int[] otherPathLength;
 	[SerializeField] private bool generation;
 	private int randomStart;
-	private List<GameObject> possiblesRooms;
-    private Dictionary<int,GameObject> possiblesRoomsDic;
+	private List<Room> possiblesRooms;
     private List<ExitEnum> possibleExits;
 
     private List<Node> nodes;
@@ -32,8 +31,8 @@ public class DungeonLayoutGenerator : MonoBehaviour
 	List<Connection> connections;
 
     private int randomBlock;
-    public GameObject startRoom;
-    public GameObject endRoom;
+    public Room startRoom;
+    public Room endRoom;
 
 
     private void Awake()
@@ -44,15 +43,15 @@ public class DungeonLayoutGenerator : MonoBehaviour
 		{
 			List<string> fileNames = new List<string>();
 			for(int i = 0; i < scriptableDirectoryPath.Length; i++) { fileNames = AddToList(fileNames, Directory.GetFiles(scriptableDirectoryPath[i]).Where(path => !path.EndsWith(".meta")).ToList()); }
-            possiblesRooms = new List<GameObject>();
-            for (int y = 0; y < fileNames.Count; y++) { possiblesRooms.Add((GameObject)AssetDatabase.LoadAssetAtPath(fileNames[y], typeof(GameObject))); }
+            possiblesRooms = new List<Room>();
+            for (int y = 0; y < fileNames.Count; y++) 
+			{
+				GameObject g = (GameObject)AssetDatabase.LoadAssetAtPath(fileNames[y], typeof(GameObject));
+				possiblesRooms.Add(g.GetComponent<Room>());
+			}
 		}
         possiblesRooms.Remove(startRoom);
         possiblesRooms.Remove(endRoom);
-        foreach (GameObject item in possiblesRooms)
-        {
-            possiblesRoomsDic.Add(item.GetComponent<Room>()., item);
-        }
         
 
 
@@ -209,7 +208,7 @@ public class DungeonLayoutGenerator : MonoBehaviour
         return new List<Node>() { originNode };
     }
 
-    private List<Node> GenerateListOfNode(Node o, List<Node> nodeList, int nbOfRooms, bool Main = false)
+	private List<Node> GenerateListOfNode(Node o, List<Node> nodeList, int nbOfRooms, bool Main = false)
     {
 		List<Node> nln = new List<Node>() { o };
 		List<Node> usedPos = new List<Node>(nodeList);
