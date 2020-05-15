@@ -24,15 +24,16 @@ public class DungeonLayoutGenerator : MonoBehaviour
 	[SerializeField] private bool generation;
 	private int randomStart;
 	private List<GameObject> possiblesRooms;
-	private List<ExitEnum> possibleExits;
+    private Dictionary<int,GameObject> possiblesRoomsDic;
+    private List<ExitEnum> possibleExits;
 
     private List<Node> nodes;
 	List<Connection> tconnections;
 	List<Connection> connections;
 
     private int randomBlock;
-    public  GameObject startRoom;
-    public  GameObject endRoom;
+    public GameObject startRoom;
+    public GameObject endRoom;
 
 
     private void Awake()
@@ -48,7 +49,11 @@ public class DungeonLayoutGenerator : MonoBehaviour
 		}
         possiblesRooms.Remove(startRoom);
         possiblesRooms.Remove(endRoom);
-
+        foreach (GameObject item in possiblesRooms)
+        {
+            possiblesRoomsDic.Add(item.GetComponent<Room>()., item);
+        }
+        
 
 
         possibleExits = System.Enum.GetValues(typeof(ExitEnum)).Cast<ExitEnum>().ToList();
@@ -123,40 +128,32 @@ public class DungeonLayoutGenerator : MonoBehaviour
                 }
                 else
                 {
-                    GenerateRooms(nodes[i]);
-                    /*
                     // level de spawn des salles. // l enum a pas la meme range que difficulte ?
                     if( i <= 3)
                     {
-                        nodes[i].difficulty = Random.Range(0, 2);
-                        GenerateEnd(nodes[i]);
+                        GenerateRooms(nodes[i], Random.Range(0, 2));
                     }
                     if (i > 3 && i <=6)
                     {
-                        nodes[i].difficulty = Random.Range(0, 2);
-                        GenerateEnd(nodes[i]);
+                        GenerateRooms(nodes[i], Random.Range(0, 2));
                     }
                     if (i > 6 && i <= 10)
                     {
-                        nodes[i].difficulty = Random.Range(0, 3);
-                        GenerateEnd(nodes[i]);
+                        GenerateRooms(nodes[i], Random.Range(0, 3));
                     }
                     if (i > 10 && i <= 14)
                     {
-                        nodes[i].difficulty = Random.Range(1, 3);
-                        GenerateEnd(nodes[i]);
+                        GenerateRooms(nodes[i], Random.Range(1, 3));
                     }
                     if (i > 14 && i <= 17)
                     {
-                        nodes[i].difficulty = Random.Range(2, 4);
-                        GenerateEnd(nodes[i]);
+                        GenerateRooms(nodes[i], Random.Range(2, 4));
                     }
                     if (i > 17 && i <= 20)
                     {
-                        nodes[i].difficulty = Random.Range(3, 4);
-                        GenerateEnd(nodes[i]);
+                        GenerateRooms(nodes[i], Random.Range(3, 4));
                     }
-                    */
+                    
 
                     // a rajouter en englobant tout les niveaux la fermeture des portes
                     /*
@@ -197,10 +194,9 @@ public class DungeonLayoutGenerator : MonoBehaviour
             }
             for (int i = nbOfRooms ; i < nodes.Count; i++)
             {
-                GenerateRooms(nodes[i]);
-                
+                GenerateRooms(nodes[i], Random.Range(0,4));
             }
-            
+
         }
 		Debug.Log("Fini");
 	}
@@ -208,7 +204,6 @@ public class DungeonLayoutGenerator : MonoBehaviour
 	private List<Node> InitListOfRoom()
     {
         Node originNode = new Node();
-        originNode.difficulty = 0;
         originNode.position = Vector2Int.zero;
 
         return new List<Node>() { originNode };
@@ -348,7 +343,6 @@ public class DungeonLayoutGenerator : MonoBehaviour
 			// create new node
 			Node n = new Node();
 			n.position = pos;
-			n.difficulty = 0;
 			n.exits.Add(exitToAddToNewNode);
 
 			if (i != nbOfRooms - 2)
@@ -375,8 +369,9 @@ public class DungeonLayoutGenerator : MonoBehaviour
 			return false;
 	}
 
-	private void GenerateRooms(Node n)
+	private void GenerateRooms(Node n, int difficulty)
 	{
+        List<Room> ad = possiblesRooms.Where(a => a.difficulty == (Room.RoomTag)difficulty).ToList();
 		ExitManager em = Instantiate(possiblesRooms[Random.Range(0, possiblesRooms.Count)], (Vector2)(n.position * roomSize), Quaternion.identity).GetComponent<ExitManager>();
         em.SetExits(n.exits);
 	}
