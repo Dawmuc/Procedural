@@ -165,9 +165,9 @@ public class DungeonLayoutGenerator : MonoBehaviour
             }
 
 			// a rajouter en englobant tout les niveaux la fermeture des portes
-			//int plop = Random.Range(3, randomBlock - 1);
-			//LockDoorToNextRoom(plop);
-			//Debug.Log(plop);
+			int plop = Random.Range(3, randomBlock - 1);
+			LockDoorToNextRoom(plop);
+			Debug.Log(plop);
 
 		}
 		Debug.Log("Fini");
@@ -344,11 +344,10 @@ public class DungeonLayoutGenerator : MonoBehaviour
 	private void GenerateRooms(Node n, int difficulty)
 	{
         List<Room> ad = possiblesRooms.Where(a => a.difficulty == (Room.RoomTag)difficulty).ToList();
-		Room r = possiblesRooms[Random.Range(0, possiblesRooms.Count)];
-		ExitManager em = Instantiate(r, (Vector2)(n.position * roomSize), Quaternion.identity).GetComponent<ExitManager>();
+		ExitManager em = Instantiate(possiblesRooms[Random.Range(0, possiblesRooms.Count)], (Vector2)(n.position * roomSize), Quaternion.identity).GetComponent<ExitManager>();
 		em.Init();
         em.SetExits(n.exits);
-		roomsExit.Add(r.GetComponent<ExitManager>());
+		roomsExit.Add(em.GetComponent<ExitManager>());
 	}
 
     private void GenerateStart(Node n)
@@ -356,7 +355,7 @@ public class DungeonLayoutGenerator : MonoBehaviour
         ExitManager em = Instantiate(startRoom, (Vector2)(n.position * roomSize), Quaternion.identity).GetComponent<ExitManager>();
 		em.Init();
         em.SetExits(n.exits);
-		roomsExit.Add(startRoom.GetComponent<ExitManager>());
+		roomsExit.Add(em);
 	}
 
     private void GenerateEnd(Node n)
@@ -364,7 +363,7 @@ public class DungeonLayoutGenerator : MonoBehaviour
         ExitManager em = Instantiate(endRoom, (Vector2)(n.position * roomSize), Quaternion.identity).GetComponent<ExitManager>();
 		em.Init();
         em.SetExits(n.exits);
-		roomsExit.Add(endRoom.GetComponent<ExitManager>());
+		roomsExit.Add(em);
 	}
 
 	private void LockDoorToNextRoom(int index)
