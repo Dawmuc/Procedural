@@ -165,9 +165,9 @@ public class DungeonLayoutGenerator : MonoBehaviour
             }
 
 			// a rajouter en englobant tout les niveaux la fermeture des portes
-			int plop = Random.Range(3, randomBlock - 1);
-			LockDoorToNextRoom(plop);
-			Debug.Log(plop);
+			//int plop = Random.Range(3, randomBlock - 1);
+			//LockDoorToNextRoom(plop);
+			//Debug.Log(plop);
 
 		}
 		Debug.Log("Fini");
